@@ -2,10 +2,12 @@ package com.dicoding.windi.app.ui.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
+import com.dicoding.windi.app.ui.academy.viewmodel.ViewModelFactory;
 import com.dicoding.windi.app.ui.reader.CourseReaderActivity;
 import com.dicoding.windi.app.R;
 import com.dicoding.windi.app.data.CourseEntity;
@@ -45,22 +47,23 @@ public class DetailCourseActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         DetailCourseAdapter adapter = new DetailCourseAdapter();
-        DetailCourseViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(DetailCourseViewModel.class);
+        ViewModelFactory factory = ViewModelFactory.getInstance(this);
+        DetailCourseViewModel viewModel = new ViewModelProvider(this, factory).get(DetailCourseViewModel.class);
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String courseId = extras.getString(EXTRA_COURSE);
             if (courseId != null) {
-                viewModel.setSelectedCourse(courseId);
-                List<ModuleEntity> modules = DataDummy.generateDummyModules(courseId);
-                adapter.setModules(modules);
-                populateCourse(viewModel.getCourse());
+                activityDetailCourseBinding.progressBar.setVisibility(View.VISIBLE);
+                activityDetailCourseBinding.content.setVisibility(View.GONE);
 
-                for (int i = 0; i < DataDummy.generateDummyCourses().size(); i++) {
-                    CourseEntity courseEntity = DataDummy.generateDummyCourses().get(i);
-                    if (courseEntity.getCourseId().equals(courseId)) {
-                        populateCourse(courseEntity);
-                    }
-                }
+                viewModel.setSelectedCourse(courseId);
+                viewModel.getModules().observe(this, modules -> {
+                    activityDetailCourseBinding.progressBar.setVisibility(View.GONE);
+                    activityDetailCourseBinding.content.setVisibility(View.VISIBLE);
+                    adapter.setModules(modules);
+                    adapter.notifyDataSetChanged();
+                });
+                viewModel.getCourse().observe(this, this::populateCourse);
             }
         }
 

@@ -1,0 +1,59 @@
+package com.dicoding.windi.app.ui.detail;
+
+import com.dicoding.windi.app.data.CourseEntity;
+import com.dicoding.windi.app.data.ModuleEntity;
+import com.dicoding.windi.app.data.source.AcademyRepository;
+import com.dicoding.windi.app.utils.DataDummy;
+
+import junit.framework.TestCase;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
+public class DetailCourseViewModelTest {
+    private DetailCourseViewModel viewModel;
+    private CourseEntity dummyCourse = DataDummy.generateDummyCourses().get(0);
+    private String courseId = dummyCourse.getCourseId();
+
+    @Mock
+    private AcademyRepository academyRepository;
+
+    @Before
+    public void setUp() {
+        viewModel = new DetailCourseViewModel(academyRepository);
+        viewModel.setSelectedCourse(courseId);
+    }
+
+    @Test
+    public void getCourse() {
+        when(academyRepository.getCourseWithModules(courseId)).thenReturn(dummyCourse);
+        CourseEntity courseEntity = viewModel.getCourse();
+        verify(academyRepository).getCourseWithModules(courseId);
+        assertNotNull(courseEntity);
+        assertEquals(dummyCourse.getCourseId(), courseEntity.getCourseId());
+        assertEquals(dummyCourse.getDeadline(), courseEntity.getDeadline());
+        assertEquals(dummyCourse.getDescription(), courseEntity.getDescription());
+        assertEquals(dummyCourse.getImagePath(), courseEntity.getImagePath());
+        assertEquals(dummyCourse.getTitle(), courseEntity.getTitle());
+    }
+
+    @Test
+    public void getModules() {
+        when(academyRepository.getAllModulesByCourse(courseId)).thenReturn(DataDummy.generateDummyModules(courseId));
+        List<ModuleEntity> moduleEntities = viewModel.getModules();
+        verify(academyRepository).getAllModulesByCourse(courseId);
+        assertNotNull(moduleEntities);
+        assertEquals(7, moduleEntities.size());
+    }
+}

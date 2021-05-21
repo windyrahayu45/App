@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.CourseViewHolder> {
-    private final BookmarkFragmentCallback callback;
+    private final BookmarkFragmentCallback callback1;
     private final ArrayList<CourseEntity> listCourses = new ArrayList<>();
 
     BookmarkAdapter(BookmarkFragmentCallback callback) {
-        this.callback = callback;
+        this.callback1 = callback;
     }
 
     void setCourses(List<CourseEntity> courses) {
@@ -55,7 +55,6 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Course
 
         CourseViewHolder(ItemsBookmarkBinding binding) {
             super(binding.getRoot());
-
             this.binding = binding;
         }
 
@@ -67,7 +66,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Course
                 intent.putExtra(DetailCourseActivity.EXTRA_COURSE, course.getCourseId());
                 itemView.getContext().startActivity(intent);
             });
-            binding.imgShare.setOnClickListener(v -> callback.onShareClick(course));
+            binding.imgShare.setOnClickListener(v -> callback1.onShareClick(course));
             Glide.with(itemView.getContext())
                     .load(course.getImagePath())
                     .apply(RequestOptions.placeholderOf(R.drawable.ic_loading).error(R.drawable.ic_error))

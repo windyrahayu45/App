@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.dicoding.windi.app.R;
 import com.dicoding.windi.app.data.CourseEntity;
 import com.dicoding.windi.app.databinding.FragmentAcademyBinding;
+import com.dicoding.windi.app.ui.academy.viewmodel.ViewModelFactory;
 import com.dicoding.windi.app.utils.DataDummy;
 
 import java.util.List;
@@ -37,11 +38,19 @@ public class AcademyFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
 
-            AcademyViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(AcademyViewModel.class);
-            List<CourseEntity> courses = viewModel.getCourses();
+            ViewModelFactory factory = ViewModelFactory.getInstance(getActivity());
+            AcademyViewModel viewModel = new ViewModelProvider(this, factory).get(AcademyViewModel.class);
+           // List<CourseEntity> courses = viewModel.getCourses();
             //List<CourseEntity> courses = DataDummy.generateDummyCourses();
             AcademyAdapter academyAdapter = new AcademyAdapter();
-            academyAdapter.setCourses(courses);
+            fragmentAcademyBinding.progressBar.setVisibility(View.VISIBLE);
+            viewModel.getCourses().observe(getActivity(), courses -> {
+                        fragmentAcademyBinding.progressBar.setVisibility(View.GONE);
+                        academyAdapter.setCourses(courses);
+                        academyAdapter.notifyDataSetChanged();
+                    }
+            );
+            //academyAdapter.setCourses(courses);
             fragmentAcademyBinding.rvAcademy.setLayoutManager(new LinearLayoutManager(getContext()));
             fragmentAcademyBinding.rvAcademy.setHasFixedSize(true);
             fragmentAcademyBinding.rvAcademy.setAdapter(academyAdapter);

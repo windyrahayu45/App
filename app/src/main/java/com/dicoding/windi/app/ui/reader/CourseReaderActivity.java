@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 
 import com.dicoding.windi.app.R;
+import com.dicoding.windi.app.ui.academy.viewmodel.ViewModelFactory;
 import com.dicoding.windi.app.ui.reader.CourseReaderCallback;
 import com.dicoding.windi.app.ui.reader.content.ModuleContentFragment;
 import com.dicoding.windi.app.ui.reader.list.ModuleListFragment;
@@ -20,7 +21,8 @@ public class CourseReaderActivity extends AppCompatActivity implements CourseRea
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_course_reader);
-        CourseReaderViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(CourseReaderViewModel.class);
+        ViewModelFactory factory = ViewModelFactory.getInstance(this);
+        CourseReaderViewModel viewModel = new ViewModelProvider(this, factory).get(CourseReaderViewModel.class);
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String courseId = bundle.getString(EXTRA_COURSE_ID);

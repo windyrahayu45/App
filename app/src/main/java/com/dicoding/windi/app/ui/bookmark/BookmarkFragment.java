@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.dicoding.windi.app.R;
 import com.dicoding.windi.app.data.CourseEntity;
 import com.dicoding.windi.app.databinding.FragmentBookmarkBinding;
+import com.dicoding.windi.app.ui.academy.viewmodel.ViewModelFactory;
 import com.dicoding.windi.app.utils.DataDummy;
 
 import java.util.List;
@@ -41,11 +42,17 @@ public class BookmarkFragment extends Fragment implements BookmarkFragmentCallba
         super.onViewCreated(view, savedInstanceState);
 
         if (getActivity() != null) {
-            BookmarkViewModel viewModel = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(BookmarkViewModel.class);
-            List<CourseEntity> courses = viewModel.getBookmarks();
+            ViewModelFactory factory = ViewModelFactory.getInstance(getActivity());
+            BookmarkViewModel viewModel = new ViewModelProvider(this, factory).get(BookmarkViewModel.class);
+            //List<CourseEntity> courses = viewModel.getBookmarks();
 
             BookmarkAdapter adapter = new BookmarkAdapter(this);
-            adapter.setCourses(courses);
+            fragmentBookmarkBinding.progressBar.setVisibility(View.VISIBLE);
+            viewModel.getBookmarks().observe(getActivity(), courses -> {
+                fragmentBookmarkBinding.progressBar.setVisibility(View.GONE);
+                adapter.setCourses(courses);
+                adapter.notifyDataSetChanged();
+            });
 
             fragmentBookmarkBinding.rvBookmark.setLayoutManager(new LinearLayoutManager(getContext()));
             fragmentBookmarkBinding.rvBookmark.setHasFixedSize(true);

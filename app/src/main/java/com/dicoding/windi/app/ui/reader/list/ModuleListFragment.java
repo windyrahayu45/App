@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.dicoding.windi.app.data.ModuleEntity;
 import com.dicoding.windi.app.databinding.FragmentModuleListBinding;
+import com.dicoding.windi.app.ui.academy.viewmodel.ViewModelFactory;
 import com.dicoding.windi.app.ui.reader.CourseReaderCallback;
 import com.dicoding.windi.app.ui.reader.CourseReaderViewModel;
 import com.dicoding.windi.app.utils.DataDummy;
@@ -52,9 +53,15 @@ public class ModuleListFragment extends Fragment implements MyAdapterClickListen
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (getActivity() != null) {
-            viewModel = new ViewModelProvider(requireActivity(), new ViewModelProvider.NewInstanceFactory()).get(CourseReaderViewModel.class);
+            ViewModelFactory factory = ViewModelFactory.getInstance(getActivity());
+            viewModel = new ViewModelProvider(requireActivity(),factory).get(CourseReaderViewModel.class);
             adapter = new ModuleListAdapter(this);
-            populateRecyclerView(viewModel.getModules());
+
+            fragmentModuleListBinding.progressBar.setVisibility(View.VISIBLE);
+            viewModel.getModules().observe(getActivity(), modules -> {
+                fragmentModuleListBinding.progressBar.setVisibility(View.GONE);
+                populateRecyclerView(modules);
+            });
         }
     }
 
